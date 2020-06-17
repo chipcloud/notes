@@ -65,48 +65,42 @@ docker exec -it kafka bash<br/>
 
 ### 5.es
 拉取镜像
-> docker pull elasticsearch:6.8.3
+> docker pull elasticsearch:6.8.3<br/>
 启动
-> docker run --name=test_es -d -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.8.3
-单节点启动
+> docker run --name=test_es -d -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.8.3<br/>
+单节点启动并挂载
+> docker run --name=elasticsearch6.8.3 -e "discovery.type=single-node" -d -p 9200:9200 -p 9300:9300  -v /program/elasticsearch/data:/usr/share/elasticsearch/data  -v /program/elasticsearch/logs:/usr/share/elasticsearch/logs  -v /program/elasticsearch/config:/usr/share/elasticsearch/config docker.io/elasticsearch:6.8.3<br/>
 
-> docker run --name=elasticsearch6.8.3 -e "discovery.type=single-node" -d -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.8.3
-> docker run --name=elasticsearch6.8.3 -e "discovery.type=single-node" -d -p 9200:9200 -p 9300:9300  -v /program/elasticsearch/data:/usr/share/elasticsearch/data  -v /program/elasticsearch/logs:/usr/share/elasticsearch/logs  -v /program/elasticsearch/config:/usr/share/elasticsearch/config docker.io/elasticsearch:6.8.3
-
-
-> docker run --name=elasticsearch6.8.3 -e "discovery.type=single-node" -d -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.8.3
-
-es 启动常见问题
-> https://www.cnblogs.com/ming-blogs/p/11184932.html
-启动kibana
-> docker run --name kibana6.8.3 -d -p 5601:5601 -e ELASTICSEARCH_URL=http://172.17.0.12:9200 kibana:6.8.3
-es简单查询语句
-https://www.jianshu.com/p/c377477df7fc
-
-查询文件
-
-find / -name jvm.options
-
-docker删除推出的容器
-> docker rm $(docker ps -q -f status=exited)
-
-centos 添加swap空间
-> https://www.jianshu.com/p/48392f3eef76
-
-解决办法：
-在/etc/sysctl.conf文件最后添加一行：
-vm.max_map_count=262144
-
-立即生效, 执行：
-/sbin/sysctl -p
-
+es集群启动
 > docker run -d -p 9200:9200 -p 9300:9300 --name es1 -h es1\
  -e cluster.name=yun -e ES_JAVA_OPTS="-Xms256m -Xmx256m" -e xpack.security.enabled=false\
-  docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+  docker.elastic.co/elasticsearch/elasticsearch:6.8.3<br/>
 
 > docker run -d -p 9201:9200 -p 9301:9300 --link es1\
   --name es2 -e cluster.name=yun -e ES_JAVA_OPTS="-Xms256m -Xmx256m" -e xpack.security.enabled=false\
-  -e discovery.zen.ping.unicast.hosts=es1 docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+  -e discovery.zen.ping.unicast.hosts=es1 docker.elastic.co/elasticsearch/elasticsearch:6.8.3<br/>
 
+> docker run -d --name kafka-manager --link zookeeper:zookeeper --link kafka:kafka -p 9001:9000 --restart=always --env ZK_HOSTS=zookeeper:2181 sheepkiller/kafka-manager<br/>
 
-> docker run -d --name kafka-manager --link zookeeper:zookeeper --link kafka:kafka -p 9001:9000 --restart=always --env ZK_HOSTS=zookeeper:2181 sheepkiller/kafka-manager
+es 启动常见问题
+> https://www.cnblogs.com/ming-blogs/p/11184932.html<br/>
+启动kibana
+> docker run --name kibana6.8.3 -d -p 5601:5601 -e ELASTICSEARCH_URL=http://172.17.0.12:9200 kibana:6.8.3<br/>
+es简单查询语句
+https://www.jianshu.com/p/c377477df7fc<br/>
+
+查询文件
+
+find / -name jvm.options<br/>
+
+docker删除推出的容器
+> docker rm $(docker ps -q -f status=exited)<br/>
+
+centos 添加swap空间
+> https://www.jianshu.com/p/48392f3eef76<br/>
+
+解决办法：
+在/etc/sysctl.conf文件最后添加一行：
+vm.max_map_count=262144<br/>
+立即生效, 执行：
+/sbin/sysctl -p<br/>
